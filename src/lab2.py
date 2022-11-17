@@ -2,7 +2,7 @@
 
 import math
 import tkinter as tk
-from points import Point
+from points import CartesianPoint, PixelPoint
 
 
 class Settings:
@@ -14,26 +14,34 @@ class Settings:
         self.background_color = background_color
 
 
+class Figure:
+    def __init__(self, *args: CartesianPoint):
+        self.points = list()
+        for arg in args:
+            self.points.append(arg)
+        self.points = tuple(self.points)
+
+
 class App(tk.Tk):
-    def __init__(self, *, width: int, height: int, settings: Settings):
+    def __init__(self, *, width: int, height: int, settings: Settings, figure: Figure, root_point: CartesianPoint):
         self.width = width
         self.height = height
         self.settings = settings
-        self.center: Point = Point(width / 2, height / 2)
+        self.center_pixel: PixelPoint = PixelPoint(width / 2, height / 2)
         super().__init__()
         self.title(self.settings.title)
         self.geometry(f"{width}x{height}")
         canvas_size = min(width, height)
         self.canvas = tk.Canvas(self, width=canvas_size, height=canvas_size, bg=self.settings.background_color)
-        self.figure: list[Point] = [Point(3, 4), Point(0, 2), Point(-2, -5), Point(2, 0)]
+        self.figure: Figure = figure
         self.__create_coordinates()
-        self.root_point: Point = Point(5, 5)
+        self.root_point: CartesianPoint = root_point
         self.draw_root()
         self.rotate_figure()
 
     def rotate_figure(self, angle=1, color="green"):
         angle = angle * math.pi / 180
-        for point in self.figure:
+        for point in self.figure.points:
             # cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
             new_x = (point.x - self.root_point.x) * math.cos(angle) -\
                 (point.y - self.root_point.y) * math.sin(angle) + \
@@ -50,21 +58,22 @@ class App(tk.Tk):
     def draw_figure(self, color: str):
         self.canvas.delete("figure")
         args = list()
-        for point in self.figure:
-            args.append(
-                (
-                    self.center.x + self.settings.distance * point.x / self.settings.scale_x,
-                    self.center.y - self.settings.distance * point.y / self.settings.scale_y
-                )
-            )
+        for point in self.figure.points:
+            pixel_point = self.__convert_cartesian_to_pixels(point)
+            args.append((pixel_point.x, pixel_point.y))
         self.canvas.create_polygon(*args, fill=color, outline="black", tags="figure", activefill="red")
         self.canvas.pack()
 
     def draw_root(self):
-        x = self.center.x + self.settings.distance * self.root_point.x / self.settings.scale_x
-        y = self.center.y - self.settings.distance * self.root_point.y / self.settings.scale_y
+        root_point = self.__convert_cartesian_to_pixels(self.root_point)
         self.canvas.create_oval(
-            x, y, x + 10, y + 10, fill="black"
+            root_point.x - 5, root_point.y - 5, root_point.x + 5, root_point.y + 5, fill="black"
+        )
+
+    def __convert_cartesian_to_pixels(self, point: CartesianPoint) -> PixelPoint:
+        return PixelPoint(
+            self.center_pixel.x + self.settings.distance * point.x / self.settings.scale_x,
+            self.center_pixel.y - self.settings.distance * point.y / self.settings.scale_y
         )
 
     def __create_coordinates(self) -> None:
@@ -75,22 +84,22 @@ class App(tk.Tk):
         # region lined
         lineage = 7
         for i in range(-25, 25):
-            x = self.center.x + i * self.settings.distance
+            x = self.center_pixel.x + i * self.settings.distance
             self.canvas.create_line(x, 0, x, self.height, fill="#F0F0F0")
-            self.canvas.create_line(x, self.center.y + lineage, x, self.center.y - lineage)
+            self.canvas.create_line(x, self.center_pixel.y + lineage, x, self.center_pixel.y - lineage)
             if i != 0:
                 self.canvas.create_text(
-                    x, self.center.y + lineage + 6,
+                    x, self.center_pixel.y + lineage + 6,
                     text=str(i * self.settings.scale_x),
                     font=('Arial', 7, 'italic')
                 )
         for i in range(-25, 25):
-            y = self.center.y + i * self.settings.distance
+            y = self.center_pixel.y + i * self.settings.distance
             self.canvas.create_line(0, y, self.width, y, fill="#F0F0F0")
-            self.canvas.create_line(self.center.x + lineage, y, self.center.x - lineage, y)
+            self.canvas.create_line(self.center_pixel.x + lineage, y, self.center_pixel.x - lineage, y)
             if i != 0:
                 self.canvas.create_text(
-                    self.center.x - lineage - 6, y,
+                    self.center_pixel.x - lineage - 6, y,
                     text=str(- i * self.settings.scale_y),
                     font=('Arial', 7, 'italic')
                 )
@@ -112,6 +121,13 @@ if __name__ == "__main__":
             title="Lab2",
             zoom_x=2,
             zoom_y=2,
+        ),
+        root_point=CartesianPoint(5, 5),
+        figure=Figure(
+            CartesianPoint(3, 4),
+            CartesianPoint(0, 2),
+            CartesianPoint(-2, -5),
+            CartesianPoint(2, 0)
         )
     )
     app.mainloop()

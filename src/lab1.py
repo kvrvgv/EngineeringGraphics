@@ -43,7 +43,7 @@ class App(tk.Tk):
         self.width = width
         self.height = height
         self.settings = settings
-        self.center: PixelPoint = PixelPoint(width / 2, height / 2)
+        self.center_pixel: PixelPoint = PixelPoint(width / 2, height / 2)
         super().__init__()
         self.title(self.settings.title)
         self.geometry(f"{width}x{height}")
@@ -60,8 +60,8 @@ class App(tk.Tk):
         :return: CartesianPoint object
         """
         return CartesianPoint(
-            -self.settings.scale_x * self.center.x / self.settings.distance,
-            self.settings.scale_y * self.center.y / self.settings.distance
+            -self.settings.scale_x * self.center_pixel.x / self.settings.distance,
+            self.settings.scale_y * self.center_pixel.y / self.settings.distance
         )
 
     def build_function_graphic(self, prev_point: CartesianPoint = None) -> None:
@@ -112,8 +112,8 @@ class App(tk.Tk):
 
     def __convert_cartesian_to_pixels(self, point: CartesianPoint) -> PixelPoint:
         return PixelPoint(
-            self.center.x + self.settings.distance * point.x / self.settings.scale_x,
-            self.center.y - self.settings.distance * point.y / self.settings.scale_y
+            self.center_pixel.x + self.settings.distance * point.x / self.settings.scale_x,
+            self.center_pixel.y - self.settings.distance * point.y / self.settings.scale_y
         )
 
     def __create_coordinates(self) -> None:
@@ -124,22 +124,22 @@ class App(tk.Tk):
         # region lined
         lineage = 7
         for i in range(-25, 25):
-            x = self.center.x + i * self.settings.distance
+            x = self.center_pixel.x + i * self.settings.distance
             self.canvas.create_line(x, 0, x, self.height, fill="#F0F0F0")
-            self.canvas.create_line(x, self.center.y + lineage, x, self.center.y - lineage)
+            self.canvas.create_line(x, self.center_pixel.y + lineage, x, self.center_pixel.y - lineage)
             if i != 0:
                 self.canvas.create_text(
-                    x, self.center.y + lineage + 6,
+                    x, self.center_pixel.y + lineage + 6,
                     text=str(i * self.settings.scale_x),
                     font=('Arial', 7, 'italic')
                 )
         for i in range(-25, 25):
-            y = self.center.y + i * self.settings.distance
+            y = self.center_pixel.y + i * self.settings.distance
             self.canvas.create_line(0, y, self.width, y, fill="#F0F0F0")
-            self.canvas.create_line(self.center.x + lineage, y, self.center.x - lineage, y)
+            self.canvas.create_line(self.center_pixel.x + lineage, y, self.center_pixel.x - lineage, y)
             if i != 0:
                 self.canvas.create_text(
-                    self.center.x - lineage - 6, y,
+                    self.center_pixel.x - lineage - 6, y,
                     text=str(- i * self.settings.scale_y),
                     font=('Arial', 7, 'italic')
                 )
