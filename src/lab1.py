@@ -69,6 +69,7 @@ class App(tk.Tk):
             point = next(self.generator)
         except StopIteration:
             print(f"Done.\nRaised exceptions: {exceptions or 'No exceptions'}")
+            exceptions.clear()
             return
         if self.__validate_point(prev_point) and self.__validate_point(point):
             self.draw_line(prev_point, point)
