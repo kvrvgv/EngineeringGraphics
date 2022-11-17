@@ -2,15 +2,7 @@
 
 import math
 import tkinter as tk
-
-
-class Point:
-    def __init__(self, x: float, y: float):
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return f"({self.x}; {self.y})"
+from points import Point
 
 
 class Settings:
