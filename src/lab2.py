@@ -119,14 +119,14 @@ if __name__ == "__main__":
         height=940,
         settings=Settings(
             title="Lab2",
-            zoom_x=2,
-            zoom_y=2,
+            zoom_x=1,
+            zoom_y=1,
         ),
         root_point=CartesianPoint(5, 5),
         figure=Figure(
             CartesianPoint(3, 4),
             CartesianPoint(0, 2),
-            CartesianPoint(-2, -5),
+            CartesianPoint(-2, -2),
             CartesianPoint(2, 0)
         )
     )
