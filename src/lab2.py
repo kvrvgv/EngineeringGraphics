@@ -23,10 +23,14 @@ class Figure:
 
 
 class App(tk.Tk):
-    def __init__(self, *, width: int, height: int, settings: Settings, figure: Figure, root_point: CartesianPoint):
+    def __init__(
+            self, *, width: int, height: int, settings: Settings,
+            figure: Figure, root_point: CartesianPoint, rotate_angle: int
+    ):
         self.width = width
         self.height = height
         self.settings = settings
+        self.rotate_angle = rotate_angle
         self.center_pixel: PixelPoint = PixelPoint(width / 2, height / 2)
         super().__init__()
         self.title(self.settings.title)
@@ -39,7 +43,9 @@ class App(tk.Tk):
         self.draw_root()
         self.rotate_figure()
 
-    def rotate_figure(self, angle=1, color="green"):
+    def rotate_figure(self, angle: int = None, color="green"):
+        if angle is None:
+            angle = self.rotate_angle
         angle = angle * math.pi / 180
         for point in self.figure.points:
             # cos(theta) * (px-ox) - sin(theta) * (py-oy) + ox
@@ -128,6 +134,7 @@ if __name__ == "__main__":
             CartesianPoint(0, 2),
             CartesianPoint(-2, -2),
             CartesianPoint(2, 0)
-        )
+        ),
+        rotate_angle=1
     )
     app.mainloop()
