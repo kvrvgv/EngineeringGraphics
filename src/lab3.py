@@ -149,7 +149,15 @@ class App(tk.Tk):
         self.canvas.pack()
 
     @staticmethod
-    def check_point_in_triangle(p1: PixelPoint, p2: PixelPoint, p3: PixelPoint, point_in: PixelPoint):
+    def check_point_in_triangle(p1: PixelPoint, p2: PixelPoint, p3: PixelPoint, point_in: PixelPoint) -> bool:
+        """
+        Function returns True if point_in in triangle p1p2p3
+        :param p1: first triangle point
+        :param p2: second triangle point
+        :param p3: third triangle point
+        :param point_in: point in triangle or not (point for check)
+        :return: True if point in triangle
+        """
         check_1 = (p1.x - point_in.x) * (p2.y - p1.y) - (p2.x - p1.x) * (p1.y - point_in.y)
         check_2 = (p2.x - point_in.x) * (p3.y - p2.y) - (p3.x - p2.x) * (p2.y - point_in.y)
         check_3 = (p3.x - point_in.x) * (p1.y - p3.y) - (p1.x - p3.x) * (p3.y - point_in.y)
